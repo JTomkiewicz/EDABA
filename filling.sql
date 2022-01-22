@@ -97,6 +97,9 @@ BEGIN
   END LOOP;
 END;
 
+-- Commit transaction
+COMMIT;
+
 -------------------------------------------
 -- Start transaction #4
 SET TRANSACTION NAME 'contracts_filling';
