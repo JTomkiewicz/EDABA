@@ -75,8 +75,26 @@ SET TRANSACTION NAME 'equipment_filling';
 
 BEGIN
   -- Insert data into equipment
+  FOR i IN 1..60 LOOP
+    INSERT INTO equipment VALUES (
+      i,
+      DBMS_RANDOM.string('A', DBMS_RANDOM.value(3, 15)),
+      DBMS_RANDOM.string('A', DBMS_RANDOM.value(3, 20)),
+      DBMS_RANDOM.string('A', DBMS_RANDOM.value(3, 20))
+    );
+  END LOOP;
 
   -- Insert data into equipment_rental
+  FOR i IN 1..50 LOOP
+    INSERT INTO equipment_rental VALUES (
+      i,
+      TO_DATE(TRUNC(DBMS_RANDOM.VALUE(TO_CHAR(DATE '2010-01-01', 'J'), TO_CHAR(DATE '2015-12-31', 'J'))), 'J'),
+      TO_DATE(TRUNC(DBMS_RANDOM.VALUE(TO_CHAR(DATE '2016-01-01', 'J'), TO_CHAR(DATE '2021-12-31', 'J'))), 'J'),
+      TO_DATE(TRUNC(DBMS_RANDOM.VALUE(TO_CHAR(DATE '2013-01-01', 'J'), TO_CHAR(DATE '2021-12-31', 'J'))), 'J'),
+      FLOOR(DBMS_RANDOM.value(1, 60)),
+      FLOOR(DBMS_RANDOM.value(1, 45))
+    );
+  END LOOP;
 END;
 
 -------------------------------------------
