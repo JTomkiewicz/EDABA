@@ -1,58 +1,61 @@
--------------------------------------------
 -- Task #2 Table filling
---
 -- Jakub Tomkiewicz
 -- Index: 300183
--------------------------------------------
-
--- Start transaction
-SET TRANSACTION NAME 'table_filling';
 
 -------------------------------------------
--- Insert data into languages_dictionary
+-- Start transaction #1
+SET TRANSACTION NAME 'dictionary_filling';
 
--- Save point
-SAVEPOINT after_lang_dict;
+BEGIN
+  -- Insert data into languages_dictionary
+  FOR i IN 1..15 LOOP
+    INSERT INTO languages_dictionary VALUES (
+      i,
+      DBMS_RANDOM.string('A', DBMS_RANDOM.value(5, 10))
+    );
+  END LOOP;
 
--------------------------------------------
--- Insert data into reviewers_dictionary
+  -- Insert data into reviewers_dictionary
+  INSERT INTO reviewers_dictionary VALUES (1, 'Admin');
+  INSERT INTO reviewers_dictionary VALUES (2, 'Client');
+  INSERT INTO reviewers_dictionary VALUES (3, 'Employee');
+END;
 
--- Save point
-SAVEPOINT after_review_dict;
-
--------------------------------------------
--- Insert data into equipment
-
--- Save point
-SAVEPOINT after_equip;
-
--------------------------------------------
--- Insert data into employees
-
--- Save point
-SAVEPOINT after_emplo;
+-- Commit transaction
+COMMIT;
 
 -------------------------------------------
--- Insert data into clients
+-- Start transaction #2
+SET TRANSACTION NAME 'client_employees_filling';
 
--- Save point
-SAVEPOINT after_clients;
+BEGIN
+  -- Insert data into employees
+
+  -- Insert data into clients
+END;
+
+-- Commit transaction
+COMMIT;
 
 -------------------------------------------
+-- Start transaction #3
+SET TRANSACTION NAME 'equipment_filling';
+
+BEGIN
+  -- Insert data into equipment
+
+  -- Insert data into equipment_rental
+END;
+
+-------------------------------------------
+-- Start transaction #4
+SET TRANSACTION NAME 'contracts_filling';
+
+BEGIN
 -- Insert data into lease_contracts
 
--- Save point
-SAVEPOINT after_lease_contr;
-
--------------------------------------------
--- Insert data into equipment_rental
-
--- Save point
-SAVEPOINT after_equip_rental;
-
--------------------------------------------
 -- Insert data into contract_opinions
+END;
 
--------------------------------------------
 -- Commit transaction
 COMMIT;
