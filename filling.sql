@@ -30,8 +30,40 @@ SET TRANSACTION NAME 'client_employees_filling';
 
 BEGIN
   -- Insert data into employees
+  FOR i IN 1..45 LOOP
+    INSERT INTO employees VALUES (
+      i,
+      DBMS_RANDOM.string('A', DBMS_RANDOM.value(3, 7)),
+      DBMS_RANDOM.string('A', DBMS_RANDOM.value(5, 15)),
+      FLOOR(DBMS_RANDOM.value(100000, 999999)),
+      FLOOR(DBMS_RANDOM.value(100000, 999999)),
+      TO_CHAR(DBMS_RANDOM.string('A', DBMS_RANDOM.value(3, 10)) || '@' || DBMS_RANDOM.string('A', DBMS_RANDOM.value(2, 5)) || '.com'),
+      FLOOR(DBMS_RANDOM.value(100000, 999999)),
+      DBMS_RANDOM.string('A', DBMS_RANDOM.value(5, 30)),
+      FLOOR(DBMS_RANDOM.value(1, 100)),
+      DBMS_RANDOM.string('A', DBMS_RANDOM.value(5, 15)),
+      DBMS_RANDOM.string('A', DBMS_RANDOM.value(5, 15)),
+      TO_CHAR(FLOOR(DBMS_RANDOM.value(10,99)) || '-' || FLOOR(DBMS_RANDOM.value(10,99))),
+      FLOOR(DBMS_RANDOM.value(10, 200)),
+      FLOOR(DBMS_RANDOM.value(1, 15)),
+      TO_DATE(TRUNC(DBMS_RANDOM.VALUE(TO_CHAR(DATE '2010-01-01', 'J'), TO_CHAR(DATE '2021-12-31', 'J'))), 'J'),
+      (CASE WHEN DBMS_RANDOM.value(0, 1) > 0.5 THEN 1 ELSE 0 END)
+    );
+  END LOOP;
 
   -- Insert data into clients
+  FOR i IN 1..20 LOOP
+    INSERT INTO clients VALUES (
+      i,
+      DBMS_RANDOM.string('A', DBMS_RANDOM.value(3, 15)),
+      FLOOR(DBMS_RANDOM.value(100, 100000)),
+      DBMS_RANDOM.string('A', DBMS_RANDOM.value(5, 30)),
+      FLOOR(DBMS_RANDOM.value(1, 100)),
+      DBMS_RANDOM.string('A', DBMS_RANDOM.value(5, 15)),
+      DBMS_RANDOM.string('A', DBMS_RANDOM.value(5, 15)),
+      TO_CHAR(FLOOR(DBMS_RANDOM.value(10,99)) || '-' || FLOOR(DBMS_RANDOM.value(100,999)))
+    );
+  END LOOP;
 END;
 
 -- Commit transaction
