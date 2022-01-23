@@ -49,4 +49,37 @@ FROM employees
 GROUP BY is_archival
 
 -------------------------------------------
--- Query #7: 
+-- Query #7: employees that started working in 2016 or 2017
+SELECT name, surname, date_begin
+FROM employees
+WHERE EXTRACT(year FROM date_begin) = 2016
+  OR EXTRACT(year FROM date_begin) = 2017;
+
+-- the same query written in another way 
+SELECT name, surname, date_begin
+FROM employees
+WHERE EXTRACT(year FROM date_begin) IN (2016, 2017);
+
+-------------------------------------------
+-- Query #8: contracts that length is smaller than 1000 days
+SELECT id, date_begin, date_end, date_end - date_begin AS length 
+FROM lease_contracts
+GROUP BY id, date_begin, date_end
+HAVING date_end - date_begin < 1000;
+
+-------------------------------------------
+-- Query #9: clients that do not take part in any leasing contracts
+SELECT c.id, c.name 
+FROM lease_contracts lc
+RIGHT JOIN clients c
+  ON lc.client = c.id
+WHERE lc.client IS NULL
+
+-------------------------------------------
+-- Query #10: the post popular programming langauges used by employees
+SELECT ld.name, COUNT(e.programming_language)
+FROM languages_dictionary ld
+INNER JOIN employees e
+  ON ld.id = e.programming_language
+GROUP BY ld.name
+ORDER BY COUNT(e.programming_language) DESC
