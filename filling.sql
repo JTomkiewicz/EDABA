@@ -46,7 +46,7 @@ BEGIN
       TO_CHAR(FLOOR(DBMS_RANDOM.value(10,99)) || '-' || FLOOR(DBMS_RANDOM.value(10,99))),
       FLOOR(DBMS_RANDOM.value(10, 200)),
       FLOOR(DBMS_RANDOM.value(1, 15)),
-      TO_DATE(TRUNC(DBMS_RANDOM.VALUE(TO_CHAR(DATE '2010-01-01', 'J'), TO_CHAR(DATE '2021-12-31', 'J'))), 'J'),
+      TO_DATE(TRUNC(DBMS_RANDOM.value(TO_CHAR(DATE '2010-01-01', 'J'), TO_CHAR(DATE '2021-12-31', 'J'))), 'J'),
       (CASE WHEN DBMS_RANDOM.value(0, 1) > 0.5 THEN 1 ELSE 0 END)
     );
   END LOOP;
@@ -88,9 +88,9 @@ BEGIN
   FOR i IN 1..50 LOOP
     INSERT INTO equipment_rental VALUES (
       i,
-      TO_DATE(TRUNC(DBMS_RANDOM.VALUE(TO_CHAR(DATE '2010-01-01', 'J'), TO_CHAR(DATE '2015-12-31', 'J'))), 'J'),
-      TO_DATE(TRUNC(DBMS_RANDOM.VALUE(TO_CHAR(DATE '2016-01-01', 'J'), TO_CHAR(DATE '2021-12-31', 'J'))), 'J'),
-      TO_DATE(TRUNC(DBMS_RANDOM.VALUE(TO_CHAR(DATE '2013-01-01', 'J'), TO_CHAR(DATE '2021-12-31', 'J'))), 'J'),
+      TO_DATE(TRUNC(DBMS_RANDOM.value(TO_CHAR(DATE '2010-01-01', 'J'), TO_CHAR(DATE '2015-12-31', 'J'))), 'J'),
+      TO_DATE(TRUNC(DBMS_RANDOM.value(TO_CHAR(DATE '2016-01-01', 'J'), TO_CHAR(DATE '2021-12-31', 'J'))), 'J'),
+      TO_DATE(TRUNC(DBMS_RANDOM.value(TO_CHAR(DATE '2013-01-01', 'J'), TO_CHAR(DATE '2021-12-31', 'J'))), 'J'),
       FLOOR(DBMS_RANDOM.value(1, 60)),
       FLOOR(DBMS_RANDOM.value(1, 45))
     );
@@ -105,9 +105,27 @@ COMMIT;
 SET TRANSACTION NAME 'contracts_filling';
 
 BEGIN
--- Insert data into lease_contracts
+  -- Insert data into lease_contracts
+  FOR i IN 1..60 LOOP
+    INSERT INTO lease_contracts VALUES (
+      i,
+      FLOOR(DBMS_RANDOM.value(100, 1000000)),
+      TO_DATE(TRUNC(DBMS_RANDOM.value(TO_CHAR(DATE '2010-01-01', 'J'), TO_CHAR(DATE '2015-12-31', 'J'))), 'J'),
+      TO_DATE(TRUNC(DBMS_RANDOM.value(TO_CHAR(DATE '2016-01-01', 'J'), TO_CHAR(DATE '2021-12-31', 'J'))), 'J'),
+      FLOOR(DBMS_RANDOM.value(1, 45)),
+      FLOOR(DBMS_RANDOM.value(1, 20))
+    );
+  END LOOP;
 
--- Insert data into contract_opinions
+  -- Insert data into contract_opinions
+  FOR i IN 1..15 LOOP
+    INSERT INTO contract_opinions VALUES (
+      FLOOR(DBMS_RANDOM.value(1, 10)),
+      DBMS_RANDOM.string('A', DBMS_RANDOM.value(3, 40)),
+      FLOOR(DBMS_RANDOM.value(1, 60)),
+      FLOOR(DBMS_RANDOM.value(1, 3))
+    );
+  END LOOP;
 END;
 
 -- Commit transaction
