@@ -62,7 +62,7 @@ FROM employees
 WHERE EXTRACT(year FROM date_begin) IN (2016, 2017);
 
 -------------------------------------------
--- Query #8: contracts that length (time between begining and ending) is smaller than 1000 days
+-- Query #8: contracts that length (time between beginning and ending) is smaller than 1000 days
 SELECT id, date_begin, date_end, date_end - date_begin AS length 
 FROM lease_contracts
 GROUP BY id, date_begin, date_end
