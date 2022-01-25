@@ -12,18 +12,26 @@ AFTER UPDATE OF is_archival ON employees
 FOR EACH ROW
 BEGIN
   IF OLD:is_archival = FALSE AND NEW:is_archival = TRUE THEN
-  UPDATE employees SET telephone = NULL WHERE id = NEW:id;
+    UPDATE employees 
+    SET telephone = NULL 
+    WHERE id = NEW:id;
   END IF;
 END;
 
 -- telephone number of first 3 employees before update
-SELECT id, name, surname, telephone, is_archival FROM employees WHERE id IN (1, 2, 3);
+SELECT id, name, surname, telephone, is_archival 
+FROM employees 
+WHERE id IN (1, 2, 3);
 
 -- move these 3 employees to archival
-UPDATE employees SET is_archival = TRUE WHERE id IN (1, 2, 3);
+UPDATE employees 
+SET is_archival = TRUE 
+WHERE id IN (1, 2, 3);
 
 -- telephone number of first 3 employees after update
-SELECT id, name, surname, telephone, is_archival FROM employees WHERE id IN (1, 2, 3);
+SELECT id, name, surname, telephone, is_archival 
+FROM employees 
+WHERE id IN (1, 2, 3);
 
 ------------------------------------------
 -- Trigger #2 INSERT
