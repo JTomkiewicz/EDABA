@@ -7,7 +7,7 @@
 -- After employee is being marked as archived, their phone number is set to null
 
 -- create trigger
-CREATE OR REPLACE TRIGGER telephone_null_after_archive
+CREATE OR REPLACE TRIGGER telephone_null_when_archive
 AFTER UPDATE OF is_archival ON employees
 FOR EACH ROW
 BEGIN
@@ -23,7 +23,7 @@ SELECT id, name, surname, telephone, is_archival
 FROM employees 
 WHERE id IN (1, 2, 3);
 
--- move these 3 employees to archival
+-- mark these 3 employees as archival
 UPDATE employees 
 SET is_archival = TRUE 
 WHERE id IN (1, 2, 3);
@@ -76,3 +76,25 @@ ORDER BY id DESC;
 
 ------------------------------------------
 -- Trigger #3 DELETE
+-- When lease contract is deleted, all associated with opinions are also deleted too
+
+-- create trigger
+CREATE OR REPLACE TRIGGER delete_contract_opinions
+AFTER DELETE ON lease_contracts
+FOR EACH ROW
+BEGIN
+END;
+
+-- show opionions for contract with id = 1 before delete
+SELECT contract, mark, reviewer, comments
+FROM contract_opinions
+WHERE contract = 1;
+
+-- delete contract with id = 1
+DELETE FROM lease_contracts
+WHERE id = 1;
+
+-- show opionions for contract with id = 1 after delete
+SELECT contract, mark, reviewer, comments
+FROM contract_opinions
+WHERE contract = 1;
