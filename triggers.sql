@@ -10,12 +10,11 @@
 CREATE OR REPLACE TRIGGER telephone_null_when_archive
 AFTER UPDATE OF is_archival ON employees
 FOR EACH ROW
+WHEN OLD.is_archival = FALSE AND NEW.is_archival = TRUE
 BEGIN
-  IF OLD:is_archival = FALSE AND NEW:is_archival = TRUE THEN
-    UPDATE employees 
-    SET telephone = NULL 
-    WHERE id = NEW:id;
-  END IF;
+  UPDATE employees 
+  SET telephone = NULL 
+  WHERE id = :NEW.id;
 END;
 
 -- telephone number of first 3 employees before update
@@ -41,7 +40,28 @@ WHERE id IN (1, 2, 3);
 CREATE OR REPLACE TRIGGER give_new_employee_equipment
 AFTER INSERT ON employees
 FOR EACH ROW
+DECLARE
+free_equip_id number;
 BEGIN
+  free_equip_id := 
+  SELECT id 
+  FROM equipment 
+  WHERE id NOT IN (
+    SELECT UNIQUE equipment 
+    FROM equipment_rental 
+    WHERE date_of_actual_return IS NOT NULL 
+    AND date_of_actual_return < :NEW.date_begin;) 
+  ORDER BY id DESC 
+  FETCH FIRST 1 ROWS ONLY;
+
+  INSERT INTO equipment_rental VALUES(
+    51,
+    :NEW.date_begin,
+    :NEW.date_begin + 365,
+    NULL,
+    free_equip_id,
+    :NEW.id
+  );
 END;
 
 -- newest equipment rentals (id DESC)
@@ -65,7 +85,7 @@ INSERT INTO employees VALUES (
   '01-234',
   1,
   10,
-  TO_DATE('2022-01-25'),
+  TO_DATE('2021-11-11'),
   0
 );
 
@@ -76,13 +96,14 @@ ORDER BY id DESC;
 
 ------------------------------------------
 -- Trigger #3 DELETE
--- When lease contract is deleted, all associated with opinions are also deleted too
+-- When lease contract is going to be deleted, all associated opinions are deleted too
 
 -- create trigger
 CREATE OR REPLACE TRIGGER delete_contract_opinions
-AFTER DELETE ON lease_contracts
+BEFORE DELETE ON lease_contracts
 FOR EACH ROW
 BEGIN
+  DELETE FROM contract_opinions WHERE contract = :OLD.id;
 END;
 
 -- show opionions for contract with id = 1 before delete
