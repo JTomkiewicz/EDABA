@@ -4,7 +4,7 @@
 
 ------------------------------------------
 -- Trigger #1 UPDATE
--- When lease contract price increases by more than 1000, earnings of employee (that take part is this contract) is increased by 20
+-- When lease contract price increases by more than 1000, earnings of employee (that take part is this contract) are increased by trigger by 20
 
 -- create trigger
 CREATE OR REPLACE TRIGGER higher_earnings_after_contract_price_increase
@@ -35,7 +35,33 @@ INNER JOIN employees e ON e.id = lc.employee
 WHERE lc.id = 1;
 
 ------------------------------------------
--- Trigger #2 INSERT
+-- Trigger #2 DELETE
+-- When lease contract is going to be deleted, all associated with it opinions are deleted too
+
+-- create trigger
+CREATE OR REPLACE TRIGGER delete_contract_opinions
+BEFORE DELETE ON lease_contracts
+FOR EACH ROW
+BEGIN
+  DELETE FROM contract_opinions WHERE contract = :OLD.id;
+END;
+
+-- show opionions for contract with id = 4 before delete
+SELECT contract, mark, reviewer, comments
+FROM contract_opinions
+WHERE contract = 4;
+
+-- delete contract with id = 4
+DELETE FROM lease_contracts
+WHERE id = 4;
+
+-- show opionions for contract with id = 4 after delete
+SELECT contract, mark, reviewer, comments
+FROM contract_opinions
+WHERE contract = 4;
+
+------------------------------------------
+-- Trigger #3 INSERT
 -- When new employee is added, equipment (if there is piece not used at the moment) is being rented for him automatically 
 
 -- create trigger
@@ -96,28 +122,3 @@ SELECT id, equipment, employee, date_begin, date_end, date_of_actual_return
 FROM equipment_rental
 ORDER BY id DESC;
 
-------------------------------------------
--- Trigger #3 DELETE
--- When lease contract is going to be deleted, all associated opinions are deleted too
-
--- create trigger
-CREATE OR REPLACE TRIGGER delete_contract_opinions
-BEFORE DELETE ON lease_contracts
-FOR EACH ROW
-BEGIN
-  DELETE FROM contract_opinions WHERE contract = :OLD.id;
-END;
-
--- show opionions for contract with id = 1 before delete
-SELECT contract, mark, reviewer, comments
-FROM contract_opinions
-WHERE contract = 1;
-
--- delete contract with id = 1
-DELETE FROM lease_contracts
-WHERE id = 1;
-
--- show opionions for contract with id = 1 after delete
-SELECT contract, mark, reviewer, comments
-FROM contract_opinions
-WHERE contract = 1;
