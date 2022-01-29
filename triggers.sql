@@ -68,57 +68,52 @@ WHERE contract = 4;
 CREATE OR REPLACE TRIGGER give_new_employee_equipment
 AFTER INSERT ON employees
 FOR EACH ROW
-DECLARE
-free_equip_id number;
 BEGIN
-  free_equip_id := 
-  SELECT id 
-  FROM equipment 
-  WHERE id NOT IN (
-    SELECT UNIQUE equipment 
-    FROM equipment_rental 
-    WHERE date_of_actual_return IS NOT NULL 
-    AND date_of_actual_return < :NEW.date_begin;) 
-  ORDER BY id DESC 
-  FETCH FIRST 1 ROWS ONLY;
-
   INSERT INTO equipment_rental VALUES(
-    51,
+    (SELECT id + 1 FROM equipment_rental ORDER BY id DESC FETCH FIRST 1 ROWS ONLY),
     :NEW.date_begin,
     :NEW.date_begin + 365,
     NULL,
-    free_equip_id,
+    (SELECT id 
+      FROM equipment 
+      WHERE id NOT IN (
+        SELECT UNIQUE equipment 
+        FROM equipment_rental 
+        WHERE date_of_actual_return IS NOT NULL 
+        AND date_of_actual_return < :NEW.date_begin) 
+      ORDER BY id DESC 
+      FETCH FIRST 1 ROWS ONLY),
     :NEW.id
   );
 END;
 
 -- newest equipment rentals (id DESC)
-SELECT id, equipment, employee, date_begin, date_end, date_of_actual_return
+SELECT id, equipment, employees, date_begin, date_end, date_of_actual_return
 FROM equipment_rental
 ORDER BY id DESC;
 
 -- insert new employee into employees
 INSERT INTO employees VALUES (
-  46,
+  (SELECT id + 1 FROM employees ORDER BY id DESC FETCH FIRST 1 ROWS ONLY),
   'Jakub',
   'Tomkiewicz',
   123456,
-  654321,
+  '654321',
   'testemail@email.com',
-  098765,
+  198765,
   'Street',
-  150,
+  '150B',
   'Warsaw',
   'Poland',
   '01-234',
-  1,
+  100,
   10,
-  TO_DATE('2021-11-11'),
+  TO_DATE('2021/11/11', 'yyyy/mm/dd'),
   0
 );
 
 -- newest equipment rentals (id DESC)
-SELECT id, equipment, employee, date_begin, date_end, date_of_actual_return
+SELECT id, equipment, employees, date_begin, date_end, date_of_actual_return
 FROM equipment_rental
 ORDER BY id DESC;
 
