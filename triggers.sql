@@ -4,37 +4,39 @@
 
 ------------------------------------------
 -- Trigger #1 UPDATE
--- After employee is being marked as archived, their phone number is set to null
+-- When lease contract price increases by more than 1000, earnings of employee (that take part is this contract) is increased by 20
 
 -- create trigger
-CREATE OR REPLACE TRIGGER telephone_null_when_archive
-AFTER UPDATE OF is_archival ON employees
+CREATE OR REPLACE TRIGGER higher_earnings_after_contract_price_increase
+AFTER UPDATE ON lease_contracts
 FOR EACH ROW
-WHEN OLD.is_archival = FALSE AND NEW.is_archival = TRUE
+WHEN (NEW.price >= OLD.price + 1000)
 BEGIN
   UPDATE employees 
-  SET telephone = NULL 
-  WHERE id = :NEW.id;
+  SET earnings_per_hour =  (SELECT earnings_per_hour + 20 FROM employees WHERE id = :NEW.employee)
+  WHERE id = :NEW.employee;
 END;
 
--- telephone number of first 3 employees before update
-SELECT id, name, surname, telephone, is_archival 
-FROM employees 
-WHERE id IN (1, 2, 3);
+-- price of the contract with id = 1 and earnings_per_hour of employee that take part in it BEFORE update
+SELECT lc.id, lc.price, lc.employee, e.earnings_per_hour
+FROM lease_contracts lc
+INNER JOIN employees e ON e.id = lc.employee
+WHERE lc.id = 1;
 
--- mark these 3 employees as archival
-UPDATE employees 
-SET is_archival = TRUE 
-WHERE id IN (1, 2, 3);
+-- increase the price of the contract by 9999
+UPDATE lease_contracts
+SET price = (SELECT price + 9999 FROM lease_contracts WHERE id = 1)
+WHERE id = 1;
 
--- telephone number of first 3 employees after update
-SELECT id, name, surname, telephone, is_archival 
-FROM employees 
-WHERE id IN (1, 2, 3);
+-- price of the contract with id = 1 and earnings_per_hour of employee that take part in it AFTER update
+SELECT lc.id, lc.price, lc.employee, e.earnings_per_hour
+FROM lease_contracts lc
+INNER JOIN employees e ON e.id = lc.employee
+WHERE lc.id = 1;
 
 ------------------------------------------
 -- Trigger #2 INSERT
--- When new employee is added, equipment (if there is piece not used at the moment) is being rented for him automaticaly 
+-- When new employee is added, equipment (if there is piece not used at the moment) is being rented for him automatically 
 
 -- create trigger
 CREATE OR REPLACE TRIGGER give_new_employee_equipment
